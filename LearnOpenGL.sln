@@ -14,6 +14,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01 - Hello Triangle", "01 -
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02 - Two Triangles", "01 - Getting Started\02 - Two Triangles\02 - Two Triangles.vcxproj", "{71DECEB8-BDD9-40D5-96CA-37D2F99C3FF9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03 - Shaders", "01 - Getting Started\03 - Shaders\03 - Shaders.vcxproj", "{1791FAAD-E35F-424A-9430-1806BD4A1B9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -38,6 +40,14 @@ Global
 		{71DECEB8-BDD9-40D5-96CA-37D2F99C3FF9}.Release|x64.Build.0 = Release|x64
 		{71DECEB8-BDD9-40D5-96CA-37D2F99C3FF9}.Release|x86.ActiveCfg = Release|Win32
 		{71DECEB8-BDD9-40D5-96CA-37D2F99C3FF9}.Release|x86.Build.0 = Release|Win32
+		{1791FAAD-E35F-424A-9430-1806BD4A1B9D}.Debug|x64.ActiveCfg = Debug|x64
+		{1791FAAD-E35F-424A-9430-1806BD4A1B9D}.Debug|x64.Build.0 = Debug|x64
+		{1791FAAD-E35F-424A-9430-1806BD4A1B9D}.Debug|x86.ActiveCfg = Debug|Win32
+		{1791FAAD-E35F-424A-9430-1806BD4A1B9D}.Debug|x86.Build.0 = Debug|Win32
+		{1791FAAD-E35F-424A-9430-1806BD4A1B9D}.Release|x64.ActiveCfg = Release|x64
+		{1791FAAD-E35F-424A-9430-1806BD4A1B9D}.Release|x64.Build.0 = Release|x64
+		{1791FAAD-E35F-424A-9430-1806BD4A1B9D}.Release|x86.ActiveCfg = Release|Win32
+		{1791FAAD-E35F-424A-9430-1806BD4A1B9D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -45,6 +55,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{B3B5F514-3D34-43AB-8244-7B9127CAFAB9} = {15731DFB-3C49-4774-B925-DB97E6664027}
 		{71DECEB8-BDD9-40D5-96CA-37D2F99C3FF9} = {15731DFB-3C49-4774-B925-DB97E6664027}
+		{1791FAAD-E35F-424A-9430-1806BD4A1B9D} = {15731DFB-3C49-4774-B925-DB97E6664027}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8B8491D5-9CF0-44C3-9497-1E15737073CC}
