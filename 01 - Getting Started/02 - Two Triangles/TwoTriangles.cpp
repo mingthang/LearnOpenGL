@@ -43,7 +43,7 @@ int main()
 
     // GLFW: Window Creation
     // =====================
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL - HelloTriangle", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL - Two Triangles", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window." << std::endl;
