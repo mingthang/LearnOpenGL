@@ -18,3 +18,8 @@ Working through an OpenGL tutorial.
 - **Version**: 2.30
 - **Repository**: [https://github.com/nothings/stb/blob/master/stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h)
 - **Description**: A single-header library for image loading in OpenGL applications.
+
+### GLM
+- **Version**: 1.0.1
+- **Repository**: [https://github.com/g-truc/glm](https://github.com/g-truc/glm)
+- **Description**: OpenGL Mathematics header-only library.
