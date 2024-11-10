@@ -2,6 +2,13 @@
 
 Working through an OpenGL tutorial.
 
+## Showcase
+<p align="center">
+  <img src="https://github.com/mingthang/LearnOpenGL/blob/master/Resources/Images/PlayStation.gif" width="45%" />
+  <br />
+  <em><a href="https://github.com/mingthang/LearnOpenGL/tree/master/01%20-%20Getting%20Started/04%20-%20Textures">Link</a></em>
+</p>
+
 ## Third Party Libraries Used
 
 ### GLFW
