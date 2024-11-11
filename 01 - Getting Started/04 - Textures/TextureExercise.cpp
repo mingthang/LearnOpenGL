@@ -63,8 +63,8 @@ int main()
     float verticesTEXT[] = {
         // positions           // texture coords 
          0.4f,  -0.55f, 0.0f,   1.0f, 1.0f, // top right
-         0.4f,  -0.8, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.4f,  -0.8f, 0.0f,   0.0f, 0.0f, // bottom left
+         0.4f,  -0.8,   0.0f,   1.0f, 0.0f, // bottom right
+        -0.4f,  -0.8f,  0.0f,   0.0f, 0.0f, // bottom left
         -0.4f,  -0.55f, 0.0f,   0.0f, 1.0f  // top left 
     };
     unsigned int indicesTEXT[] = {
@@ -216,6 +216,9 @@ int main()
     }
 
     // Deallocate all resources
+    glDeleteVertexArrays(2, VAOs);
+    glDeleteBuffers(2, VBOs);
+    glDeleteBuffers(2, EBOs);
 
     // GLFW: Terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
