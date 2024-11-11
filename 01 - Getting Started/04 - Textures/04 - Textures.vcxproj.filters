@@ -35,9 +35,6 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TextureExercise.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TexturePlayStation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
