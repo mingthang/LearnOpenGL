@@ -79,8 +79,11 @@ int main()
 	// Color Transition Time
 	float time = 0.0f;
 	float rotationAngle = 0.0f;
+	float z_r2 = 0.0f;
 	bool isShear = false;
 	bool isRotate = false;
+	bool isInverse = false;
+	bool is1D = false;
 	bool reverse = false;
 
 	while (!glfwWindowShouldClose(window))
@@ -101,42 +104,108 @@ int main()
 		{
 			if (reverse)
 			{
-				time -= 0.002f; 
+				time = 1.5f - glfwGetTime();
 				if (time <= 0.0f) 
 				{
 					isShear = true;
 					reverse = false; 
-					time = 0.0f;
+					glfwSetTime(0.0f);
+					time = glfwGetTime();
 				}
 			}
 			else
 			{
-				time += 0.002f; 
-				if (time >= 0.25f)
+				time = glfwGetTime();
+				if (time >= 1.5f)
+				{
 					reverse = true; 
+					glfwSetTime(0.0f);
+					time = glfwGetTime();
+				}
 			}
-			transform[1][0] = time;
+			transform[1][0] = time * 0.1f;
 		}
 		// Rotate
 		if (isShear && !isRotate) 
 		{
-			if (reverse) 
+			if (reverse)
 			{
-				rotationAngle -= 0.2f;
-				if (rotationAngle <= 0.0f)
+				time = 2.0f - glfwGetTime();
+				if (time <= 0.0f) 
 				{
 					isRotate = true;
-					reverse = false;
-					rotationAngle = 0.0f;
+					reverse = false; 
+					glfwSetTime(0.0f);
+					time = glfwGetTime();
 				}
 			}
 			else
 			{
-				rotationAngle += 0.2f;
-				if (rotationAngle >= 45.0f)
+				time = glfwGetTime();
+				if (time >= 2.0f)
+				{
 					reverse = true;
+					glfwSetTime(0.0f);
+					time = glfwGetTime();
+				}
 			}
+			rotationAngle = time * 15.f;
 			transform = glm::rotate(transform, glm::radians(rotationAngle), glm::vec3(0.0f, 0.0f, 1.0f));
+			if (isRotate)
+				time = 1.0f;
+		}
+		// inverse
+		if (isRotate && !isInverse)
+		{
+			time -= glfwGetTime() * 0.0001f;
+			z_r2 += glfwGetTime() * 0.0001f;
+			if (time <= -1.0f)
+			{
+				glfwSetTime(0.0f);
+				isInverse = true;
+				time = 1.0f;
+			}
+			transform = glm::mat4();
+			transform[0] = glm::vec4(time, 0.0, 0.0, 0.0);
+			transform[1] = glm::vec4(0.0, time, 0.0, 0.0);
+			transform[2] = glm::vec4(0.0, 0.0, 1.0, 0.0);
+			transform[3] = glm::vec4(0.0, 0.0, 0.0, 1.0);
+			if (isInverse)
+				time = 0.0f;
+		}
+		// 1D
+		if (isInverse && !is1D)
+		{
+			if (reverse) 
+			{
+				time -= glfwGetTime() * 0.0001f;
+				if (time <= 0.0f)
+				{
+					glfwSetTime(0.0f);
+					time = 0.0f;
+					is1D = true;
+					reverse = false;
+				}
+				transform = glm::mat4();
+				transform[0] = glm::vec4(1.0, 0.0, 0.0, 0.0);
+				transform[1] = glm::vec4(time, 1.0 - time, 0.0, 0.0);
+				transform[2] = glm::vec4(0.0, 0.0, 1.0, 0.0);
+				transform[3] = glm::vec4(0.0, 0.0, 0.0, 1.0);
+			}
+			else
+			{
+				time += glfwGetTime() * 0.0001f;
+				if (time >= 1.0f)
+				{
+					glfwSetTime(0.0f);
+					reverse = true;
+				}
+				transform = glm::mat4();
+				transform[0] = glm::vec4(1.0, 0.0, 0.0, 0.0);
+				transform[1] = glm::vec4(time, 1.0 - time, 0.0, 0.0);
+				transform[2] = glm::vec4(0.0, 0.0, 1.0, 0.0);
+				transform[3] = glm::vec4(0.0, 0.0, 0.0, 1.0);
+			}
 		}
 
 		// Shader Program
