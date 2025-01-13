@@ -1,10 +1,10 @@
 #version 460 core
 
-in vec3 ourColor;
-in vec2 TexCoord;
-
 out vec4 FragColor;
 
+in vec2 TexCoord;
+
+// texture samplers
 uniform sampler2D texture1;
 uniform sampler2D texture2;
 
