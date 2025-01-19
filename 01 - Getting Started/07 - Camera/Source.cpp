@@ -19,9 +19,12 @@ const unsigned int SCR_HEIGHT = 600;
 const int cols = 100;
 const int rows = 100;
 const float scale = 0.2f;
+float zoff = 0.0f;
+const int xDiv = 40;
+const int yDiv = 30;
 
 // Camera 
-Camera camera(glm::vec3(0.0f, 1.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 3.0f, 3.5f));
 bool firstMouse = true;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -71,7 +74,7 @@ int main()
 	Shader shaderProgram("4.6.vertex_shader.glsl", "4.6.fragment_shader.glsl");
 
 	// Generate terrain data
-	std::vector<float> vertices = generatePlaneVertexData(3, 2, 30, 20);
+	std::vector<float> vertices = generatePlaneVertexData(4, 2.5, xDiv, yDiv);
 
 	// Generate and bind VAO/VBO
 	unsigned int VAO, VBO, EBO;
@@ -90,7 +93,7 @@ int main()
 	glEnableVertexAttribArray(0);
 
 	// EBO
-	std::vector<unsigned int> indices = generatePlaneIndexData(30, 20);
+	std::vector<unsigned int> indices = generatePlaneIndexData(xDiv, yDiv);
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
@@ -99,7 +102,6 @@ int main()
 
 	// Configure global OpenGL state
 	glEnable(GL_DEPTH_TEST);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// Render loop
 	while (!glfwWindowShouldClose(window))
@@ -113,14 +115,16 @@ int main()
 		processInput(window);
 
 		// Update terrain heights 
-		updateVertexHeight(vertices, 30, 20);
+		updateVertexHeight(vertices, xDiv, yDiv);
 		// Re-upload vertex data to the GPU
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(float), vertices.data());
 
 		// Clear color buffer & depth buffer
-		glClearColor(1.0, 1.0f, 1.0f, 1.0f);
+		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
+		//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render terrain
@@ -133,7 +137,11 @@ int main()
 
 		// view transformation
 		glm::mat4 view = glm::mat4(1.0f);
-		view = camera.GetViewMatrix();
+		//view = camera.GetViewMatrix();
+		const float radius = 3.5;
+		float camX = sin(glfwGetTime() * 0.25f) * radius;
+		float camZ = cos(glfwGetTime() * 0.25f) * radius;
+		view = glm::lookAt(glm::vec3(camX, 3.0, camZ), glm::vec3(0.0f, 0.2, 0.0f), glm::vec3(0.0, 1.0, 0.0));
 		shaderProgram.setMat4("view", view);
 
 		// projection
@@ -160,6 +168,11 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_1))
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	if (glfwGetKey(window, GLFW_KEY_2))
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.ProcessKeyboard(FORWARD, deltaTime);
@@ -266,28 +279,29 @@ std::vector<unsigned int> generatePlaneIndexData(int xDivisions, int yDivisions)
 
 void updateVertexHeight(std::vector<float>& vertices, int xDivisions, int yDivisions)
 {
-	// Ensure we have valid vertices
 	if (vertices.empty()) return;
 
-	// Perlin noise parameters
-	float noiseScale = 0.5f;  // Smaller = smoother terrain
-	float time = static_cast<float>(glfwGetTime());
-
-	int index = 0; // Tracks vertex index
+	int index = 0;
+	float xoff = 0.0f;
 	for (int i = 0; i <= yDivisions; ++i)
 	{
+		float yoff = 0.0f;
 		for (int j = 0; j <= xDivisions; ++j)
 		{
-			float x = vertices[index];     
-			float z = vertices[index + 2]; 
+			float x = vertices[index];
+			float z = vertices[index + 2];
 
-			// Calculate the new y value using Perlin noise
-			float height = glm::perlin(glm::vec2(x, z) * noiseScale + time * 0.5f) * 0.5f;
+			float height = (glm::perlin(glm::vec3(xoff, yoff, zoff)) + 1.0f) / 2.0f;
 
 			// Update the y-coordinate
-			vertices[index + 1] = height; 
+			vertices[index + 1] = height;
 
-			index += 3; // Move to the next vertex (x, y, z)
+			index += 3; 
+			yoff += 0.12f;  
 		}
+		xoff += 0.12f;  	
 	}
+
+	// Update the zoff to animate the terrain over time
+	zoff += 0.005f;
 }
