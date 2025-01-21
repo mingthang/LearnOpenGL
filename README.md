@@ -1,6 +1,6 @@
 # LearnOpenGL
 
-Working through an OpenGL tutorial.
+Working through an OpenGL tutorial and conducting some self-research.
 
 ## Showcase
 <p align="center">
