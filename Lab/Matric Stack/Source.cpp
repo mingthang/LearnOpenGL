@@ -62,6 +62,8 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -131,6 +133,7 @@ void setupVertices()
 
 void display()
 {
+	
 	float currentTime = (float)glfwGetTime();
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
