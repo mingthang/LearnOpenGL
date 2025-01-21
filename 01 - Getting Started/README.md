@@ -35,3 +35,10 @@
   <br />
   <em>Note: The GIF may take some time to load</em>
 </p>
+
+### [07 - Camera](https://github.com/mingthang/LearnOpenGL/tree/master/01%20-%20Getting%20Started/07%20-%20Camera)   
+<p align="center">
+  <img src="https://github.com/mingthang/LearnOpenGL/blob/master/Resources/Images/NoisePlane.gif" width="45%" />
+  <br />
+  <em>Note: The GIF may take some time to load</em>
+</p>
