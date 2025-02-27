@@ -36,3 +36,8 @@ Working through an OpenGL tutorial and conducting some self-research.
 - **Version**: 1.0.1
 - **Repository**: [https://github.com/g-truc/glm](https://github.com/g-truc/glm)
 - **Description**: OpenGL Mathematics header-only library.
+
+### Dear ImGui
+- **Version**: 1.91.8
+- **Repository**: [https://github.com/ocornut/imgui](https://github.com/ocornut/imgui)
+- **Description**: Graphical User interface.
