@@ -140,8 +140,10 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cube.fs" />
-    <None Include="cube.vs" />
+    <None Include="cubeFrag.fs" />
+    <None Include="cubeFrag.vs" />
+    <None Include="cubeVert.fs" />
+    <None Include="cubeVert.vs" />
     <None Include="lightCube.fs" />
     <None Include="lightCube.vs" />
   </ItemGroup>

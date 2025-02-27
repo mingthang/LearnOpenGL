@@ -31,9 +31,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cube.vs" />
-    <None Include="cube.fs" />
+    <None Include="cubeFrag.vs" />
+    <None Include="cubeFrag.fs" />
     <None Include="lightCube.vs" />
     <None Include="lightCube.fs" />
+    <None Include="cubeVert.vs" />
+    <None Include="cubeVert.fs" />
   </ItemGroup>
 </Project>

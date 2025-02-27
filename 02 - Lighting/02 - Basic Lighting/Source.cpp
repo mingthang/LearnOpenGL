@@ -18,7 +18,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // Camera 
-Camera camera(glm::vec3(2.0f, 1.0f, 3.5f));
+Camera camera(glm::vec3(2.0f, 0.0f, 0.0f));
 bool firstMouse = true;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -28,7 +28,14 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // Lighting
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightOffset(1.2f, 1.0f, 2.0f);
+glm::vec3 randomAxis = glm::normalize(glm::vec3(
+	(rand() % 200 - 100) / 100.0f,  // Random X (-1 to 1)
+	(rand() % 200 - 100) / 100.0f,  // Random Y (-1 to 1)
+	(rand() % 200 - 100) / 100.0f   // Random Z (-1 to 1)
+));
+float rotationAngle = 0.0f;
+float rotationSpeed = 1.0f;
 
 int main()
 {
@@ -57,7 +64,7 @@ int main()
 	}
 
 	// Shaders
-	Shader cubeShader = Shader("cube.vs", "cube.fs");
+	Shader cubeShader = Shader("cubeVert.vs", "cubeVert.fs"); // use per-vertex (cubeVert) or per-fragment (cubeFrag) shading version
 	Shader lightCubeShader = Shader("lightCube.vs", "lightCube.fs");
 
 	// Vertex Data
@@ -149,6 +156,35 @@ int main()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Draw light cube
+		lightCubeShader.use();
+		// view/projection transformations
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+		lightCubeShader.setMat4("projection", projection);
+		lightCubeShader.setMat4("view", view);
+		// rotation
+		rotationAngle += deltaTime * rotationSpeed;
+		if (rotationAngle >= glm::two_pi<float>())
+		{
+			rotationAngle = glm::two_pi<float>() - rotationAngle;
+			randomAxis = glm::normalize(glm::vec3(
+				(rand() % 200 - 100) / 100.0f,
+				(rand() % 200 - 100) / 100.0f,
+				(rand() % 200 - 100) / 100.0f
+			));
+		}
+		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), rotationAngle, randomAxis);
+		glm::vec3 lightPos = glm::vec3(rotation * glm::vec4(lightOffset, 1.0f));
+		// model transformation
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, lightPos);
+		model = glm::scale(model, glm::vec3(0.2f));
+		lightCubeShader.setMat4("model", model);
+		// render the light cube
+		glBindVertexArray(lightVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
 		// Draw coral cube
 		cubeShader.use();
 		// set uniforms
@@ -157,30 +193,15 @@ int main()
 		cubeShader.setVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
 		cubeShader.setVec3("viewPos", camera.Position.x, camera.Position.y, camera.Position.z);
 		// view/projection transformations
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		glm::mat4 view = camera.GetViewMatrix();
 		cubeShader.setMat4("projection", projection);
 		cubeShader.setMat4("view", view);
 		// model transformation
-		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::mat4(1.0f);
 		cubeShader.setMat4("model", model);
 		// render the cube
 		glBindVertexArray(cubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		// Draw light cube
-		lightCubeShader.use();
-		// view/projection transformations
-		lightCubeShader.setMat4("projection", projection);
-		lightCubeShader.setMat4("view", view);
-		// model transformation
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, lightPos);
-		model = glm::scale(model, glm::vec3(0.2f));
-		lightCubeShader.setMat4("model", model);
-		// render the light cube
-		glBindVertexArray(lightVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
