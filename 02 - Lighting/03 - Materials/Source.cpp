@@ -1,3 +1,7 @@
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -14,14 +18,16 @@ void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 void MouseCallback(GLFWwindow* window, double xPos, double yPos);
 
 // Settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1024;
+const unsigned int SCR_HEIGHT = 768;
 
 // Camera 
 Camera camera(glm::vec3(2.0f, 0.0f, 0.0f));
 bool firstMouse = true;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
+bool mouseCallbackEnabled = true;
+bool vKeyPressed = false;
 
 // Timing
 float deltaTime = 0.0f;
@@ -37,6 +43,21 @@ glm::vec3 randomAxis = glm::normalize(glm::vec3(
 float rotationAngle = 0.0f;
 float rotationSpeed = 1.0f;
 
+// ImGUI
+const char* shadingMethods[] = { "Gouraud", "Phong" };
+static int shadingMethods_current = 0;
+// Material properties
+glm::vec3 materialAmbient(1.0f, 0.5f, 0.31f);
+glm::vec3 materialDiffuse(1.0f, 0.5f, 0.31f);
+glm::vec3 materialSpecular(1.0f, 0.5f, 0.31f);
+float materialShininess = 32.0f;
+// Light properties
+glm::vec3 lightColor = glm::vec3(1.0f);
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightAmbient(0.2f, 0.2f, 0.2f);
+glm::vec3 lightDiffuse(0.7f, 0.7f, 0.7f);
+glm::vec3 lightSpecular(1.0f, 1.0f, 1.0f);
+
 int main()
 {
 	// Initialize GLFW
@@ -45,7 +66,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); 
 
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL - Basic Lighting", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL - Materials", NULL, NULL);
 	if (!window)
 	{
 		std::cout << "Failed to create glfw window." << std::endl;
@@ -56,6 +77,7 @@ int main()
 	glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 	glfwSetCursorPosCallback(window, MouseCallback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetWindowPos(window, 450, 180);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -64,8 +86,11 @@ int main()
 	}
 
 	// Shaders
-	Shader cubeShader = Shader("cubeVert.vs", "cubeVert.fs"); // use per-vertex (cubeVert) or per-fragment (cubeFrag) shading version
+	Shader phongShader = Shader("cubeFrag.vs", "cubeFrag.fs");
+	Shader gouraudShader = Shader("cubeVert.vs", "cubeVert.fs");
 	Shader lightCubeShader = Shader("lightCube.vs", "lightCube.fs");
+
+	Shader* cubeShader = &gouraudShader;
 
 	// Vertex Data
 	float vertices[] = {
@@ -142,6 +167,14 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	camera.LookAt(glm::vec3(0.0f));
 
+	// ImGui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 460");
+
 	// Render loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -155,6 +188,10 @@ int main()
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 
 		// Draw light cube
 		lightCubeShader.use();
@@ -186,33 +223,65 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Draw coral cube
-		cubeShader.use();
+		cubeShader->use();
 		// set uniforms
-		cubeShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-		cubeShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-		cubeShader.setVec3("material.specular", 1.0f, 0.5f, 0.31f);
-		cubeShader.setFloat("material.shininess", 32.0f);
+		cubeShader->setVec3("material.ambient", materialAmbient);
+		cubeShader->setVec3("material.diffuse", materialDiffuse);
+		cubeShader->setVec3("material.specular", materialSpecular);
+		cubeShader->setFloat("material.shininess", materialShininess);
 		
-		glm::vec3 lightColor = glm::vec3(1.0f);
-		cubeShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-		cubeShader.setVec3("light.diffuse", 0.7f, 0.7f, 0.7f);
-		cubeShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-		cubeShader.setVec3("light.position", lightPos.x, lightPos.y, lightPos.z);
-		cubeShader.setVec3("viewPos", camera.Position.x, camera.Position.y, camera.Position.z);
+		cubeShader->setVec3("light.ambient", lightColor * lightAmbient);
+		cubeShader->setVec3("light.diffuse", lightColor * lightDiffuse);
+		cubeShader->setVec3("light.specular", lightSpecular);
+		cubeShader->setVec3("light.position", lightPos);
+		cubeShader->setVec3("viewPos", camera.Position);
 		// view/projection transformations
-		cubeShader.setMat4("projection", projection);
-		cubeShader.setMat4("view", view);
+		cubeShader->setMat4("projection", projection);
+		cubeShader->setMat4("view", view);
 		// model transformation
 		model = glm::mat4(1.0f);
-		cubeShader.setMat4("model", model);
+		cubeShader->setMat4("model", model);
 		// render the cube
 		glBindVertexArray(cubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		ImGui::Begin("Options");
+		if(ImGui::Combo("Shading Methods", &shadingMethods_current, shadingMethods, IM_ARRAYSIZE(shadingMethods)))
+			switch (shadingMethods_current) {
+				case 0: cubeShader = &gouraudShader; break;
+				case 1: cubeShader = &phongShader; break;
+			}	
+		ImGui::End();
+
+		ImGui::Begin("Material and Light Settings");
+
+		// Material Sliders
+		ImGui::Text("Material Properties");
+		ImGui::ColorEdit3("Ambient", (float*)&materialAmbient);
+		ImGui::ColorEdit3("Diffuse", (float*)&materialDiffuse);
+		ImGui::ColorEdit3("Specular", (float*)&materialSpecular);
+		ImGui::SliderFloat("Shininess", &materialShininess, 1.0f, 128.0f);
+
+		// Light Sliders
+		ImGui::Separator();
+		ImGui::Text("Light Properties");
+		ImGui::ColorEdit3("Light Color", (float*)&lightColor);
+		ImGui::ColorEdit3("Light Ambient", (float*)&lightAmbient);
+		ImGui::ColorEdit3("Light Diffuse", (float*)&lightDiffuse);
+		ImGui::ColorEdit3("Light Specular", (float*)&lightSpecular);
+
+		ImGui::End();
+		
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glDeleteVertexArrays(1, &cubeVAO);
 	glDeleteVertexArrays(1, &lightVAO);
@@ -227,6 +296,21 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(window, true);
+
+	// toggle camera
+	if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS && !vKeyPressed)
+	{
+		if (mouseCallbackEnabled)
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		else
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		mouseCallbackEnabled = !mouseCallbackEnabled;
+		vKeyPressed = true;  
+	}
+	if (glfwGetKey(window, GLFW_KEY_V) == GLFW_RELEASE)
+	{
+		vKeyPressed = false;  
+	}
 
 	if (glfwGetKey(window, GLFW_KEY_1))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -250,6 +334,9 @@ void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 
 void MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)
 {
+	if (!mouseCallbackEnabled)
+		return;
+
 	float xPos = static_cast<float>(xPosIn);
 	float yPos = static_cast<float>(yPosIn);
 
