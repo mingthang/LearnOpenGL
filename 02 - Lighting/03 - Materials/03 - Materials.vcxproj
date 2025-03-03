@@ -149,6 +149,7 @@
     <None Include="cubeFrag.vs" />
     <None Include="cubeVert.fs" />
     <None Include="cubeVert.vs" />
+    <None Include="imgui.ini" />
     <None Include="lightCube.fs" />
     <None Include="lightCube.vs" />
   </ItemGroup>
