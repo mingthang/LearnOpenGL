@@ -153,6 +153,7 @@
   <ItemGroup>
     <Image Include="diffuse.png" />
     <Image Include="emission.png" />
+    <Image Include="matrix.jpg" />
     <Image Include="specular.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

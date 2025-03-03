@@ -89,6 +89,8 @@ int main()
 	cubeShader->use();
 	cubeShader->setInt("material.diffuse", 0);
 	cubeShader->setInt("material.specular", 1);
+	cubeShader->setInt("material.emission", 2);
+	cubeShader->setInt("material.gradient", 3);
 
 	// Vertex Data
 	float vertices[] = {
@@ -168,6 +170,9 @@ int main()
 	// Texture
 	unsigned int diffuseMap = loadTexture("diffuse.png");
 	unsigned int specularMap = loadTexture("specular.png");
+	unsigned int emissionMap = loadTexture("emission.png");
+	//unsigned int emissionMap = loadTexture("matrix.jpg");
+	unsigned int gradientMap = loadTexture("gradient.jpg");
 
 	// Configure global OpenGL state
 	glEnable(GL_DEPTH_TEST);
@@ -233,10 +238,15 @@ int main()
 		model = glm::mat4(1.0f);
 		cubeShader->setMat4("model", model);
 		// bind diffuse map
+		cubeShader->setFloat("time", glfwGetTime());
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specularMap);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, emissionMap);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, gradientMap);
 
 		// render the cube
 		glBindVertexArray(cubeVAO);

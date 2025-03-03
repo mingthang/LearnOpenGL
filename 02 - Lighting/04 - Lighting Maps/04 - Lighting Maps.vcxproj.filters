@@ -54,5 +54,8 @@
     <Image Include="specular.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="matrix.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
