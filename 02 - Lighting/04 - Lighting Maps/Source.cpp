@@ -45,9 +45,6 @@ float rotationSpeed = 1.0f;
 const char* shadingMethods[] = { "Gouraud", "Phong" };
 static int shadingMethods_current = 0;
 // Material properties
-glm::vec3 materialAmbient(1.0f, 0.5f, 0.31f);
-glm::vec3 materialDiffuse(1.0f, 0.5f, 0.31f);
-glm::vec3 materialSpecular(1.0f, 1.0f, 1.0f);
 float materialShininess = 64.0f;
 // Light properties
 glm::vec3 lightColor = glm::vec3(1.0f);
@@ -88,8 +85,10 @@ int main()
 	Shader gouraudShader = Shader("cubeVert.vs", "cubeVert.fs");
 	Shader lightCubeShader = Shader("lightCube.vs", "lightCube.fs");
 
-	Shader* cubeShader = &gouraudShader;
+	Shader* cubeShader = &phongShader;
+	cubeShader->use();
 	cubeShader->setInt("material.diffuse", 0);
+	cubeShader->setInt("material.specular", 1);
 
 	// Vertex Data
 	float vertices[] = {
@@ -168,11 +167,11 @@ int main()
 
 	// Texture
 	unsigned int diffuseMap = loadTexture("diffuse.png");
+	unsigned int specularMap = loadTexture("specular.png");
 
 	// Configure global OpenGL state
 	glEnable(GL_DEPTH_TEST);
 	camera.LookAt(glm::vec3(0.0f));
-
 
 	// Render loop
 	while (!glfwWindowShouldClose(window))
@@ -220,7 +219,6 @@ int main()
 		// Draw coral cube
 		cubeShader->use();
 		// set uniforms
-		cubeShader->setVec3("material.specular", materialSpecular);
 		cubeShader->setFloat("material.shininess", materialShininess);
 		
 		cubeShader->setVec3("light.ambient", lightColor * lightAmbient);
@@ -237,6 +235,8 @@ int main()
 		// bind diffuse map
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularMap);
 
 		// render the cube
 		glBindVertexArray(cubeVAO);

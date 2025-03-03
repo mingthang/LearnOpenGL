@@ -151,10 +151,9 @@
     <None Include="lightCube.vs" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\MINHTHANG\Desktop\diffuse.png" />
-    <Image Include="C:\Users\MINHTHANG\Desktop\emission.png" />
     <Image Include="diffuse.png" />
     <Image Include="emission.png" />
+    <Image Include="specular.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

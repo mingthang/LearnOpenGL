@@ -45,16 +45,13 @@
     <None Include="lightCube.vs" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\MINHTHANG\Desktop\emission.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\MINHTHANG\Desktop\diffuse.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="diffuse.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="emission.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="specular.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
