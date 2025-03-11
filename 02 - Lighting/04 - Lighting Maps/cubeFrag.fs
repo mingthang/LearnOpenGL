@@ -54,7 +54,7 @@ void main()
     vec3 colorShift = texture(material.gradient, vec2(fract(time * 0.1), 0.5)).rgb;
     emission *= colorShift;
     emission *= show;
-    //emission *= (sin(time) * 0.5 + 0.5) * 2.0;
+    emission *= (sin(time) * 0.5 + 0.5) * 2.0;
     
     vec3 result = ambient + diffuse + specular + emission;
     FragColor = vec4(result, 1.0f);
