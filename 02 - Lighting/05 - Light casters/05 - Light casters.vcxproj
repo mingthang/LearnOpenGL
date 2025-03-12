@@ -144,6 +144,8 @@
   <ItemGroup>
     <None Include="directionLight.fs" />
     <None Include="directionLight.vs" />
+    <None Include="flashLight.fs" />
+    <None Include="flashLight.vs" />
     <None Include="lightCube.fs" />
     <None Include="lightCube.vs" />
     <None Include="pointLight.fs" />

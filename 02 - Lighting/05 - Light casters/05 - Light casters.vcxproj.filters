@@ -43,6 +43,8 @@
     <None Include="pointLight.fs" />
     <None Include="lightCube.vs" />
     <None Include="lightCube.fs" />
+    <None Include="flashLight.vs" />
+    <None Include="flashLight.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="diffuse.png">

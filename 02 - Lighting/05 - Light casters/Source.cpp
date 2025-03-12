@@ -28,13 +28,15 @@ float lastFrameTime = 0.0f;
 // LIGHTING
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 glm::vec3 directionLightDir(-0.2f, -1.0f, -0.3f);
-glm::vec3 lightAmbient(0.2f, 0.2f, 0.2f);
-glm::vec3 lightDiffuse(0.5f, 0.5f, 0.5f);
+glm::vec3 lightAmbient(0.1f, 0.1f, 0.1f);
+glm::vec3 lightDiffuse(0.8f, 0.8f, 0.8f);
 glm::vec3 lightSpecular(1.0f, 1.0f, 1.0f);
 // ATTENUATION
 float constant = 1.0f;
 float linear = 0.09f;
 float quadratic = 0.032f;
+// FLASH LIGHT
+float cutOff = glm::cos(glm::radians(14.5f));
 
 // MATERIAL
 float materialShininess = 32.0f;
@@ -83,9 +85,10 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	// SHADER
-	Shader shaders[2] = {
+	Shader shaders[3] = {
 		Shader("directionLight.vs", "directionLight.fs"),
-		Shader("pointLight.vs", "pointLight.fs")
+		Shader("pointLight.vs", "pointLight.fs"),
+		Shader("flashLight.vs", "flashLight.fs")
 	};
 	
 	Shader* cubeShader;
@@ -197,6 +200,16 @@ int main()
 		else if (selectedShader == SHADERS::POINT)
 		{
 			cubeShader->setVec3("light.position", lightPos);
+			cubeShader->setFloat("light.constant", constant);
+			cubeShader->setFloat("light.linear", linear);
+			cubeShader->setFloat("light.quadratic", quadratic);
+		}
+		else if (selectedShader == SHADERS::SPOT)
+		{
+			cubeShader->setVec3("light.position", camera.Position);
+			cubeShader->setVec3("light.direction", camera.Front);
+			cubeShader->setFloat("light.cutOff", cutOff);
+
 			cubeShader->setFloat("light.constant", constant);
 			cubeShader->setFloat("light.linear", linear);
 			cubeShader->setFloat("light.quadratic", quadratic);
