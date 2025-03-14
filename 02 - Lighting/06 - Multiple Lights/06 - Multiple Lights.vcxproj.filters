@@ -44,4 +44,8 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cubeShader.vs" />
+    <None Include="cubeShader.fs" />
+  </ItemGroup>
 </Project>
