@@ -30,7 +30,7 @@ struct PointLight
     float quadratic;
 };
 
-#define NR_POINT_LIGHTS 4;
+#define NR_POINT_LIGHTS 4
 
 out vec4 FragColor;
 
@@ -90,7 +90,7 @@ vec3 CalPointLight(PointLight pointLight, vec3 norm, vec3 FragPos, vec3 viewDir)
     vec3 specular = pointLight.specular * spec * texture(material.specular, TexCoords).rgb;
 
     float distance = length(pointLight.position - FragPos);
-    float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic (distance * distance));
+    float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * (distance * distance));
 
     ambient *= attenuation;
     diffuse *= attenuation;

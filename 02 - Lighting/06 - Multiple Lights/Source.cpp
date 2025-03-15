@@ -59,7 +59,7 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 
-	Shader cubeShader("cube.vs", "cube.fs");
+	Shader cubeShader("cubeShader.vs", "cubeShader.fs");
 	Shader lightCubeShader("lightCube.vs", "lightCube.fs");
 
 	float vertices[] = {
@@ -215,9 +215,16 @@ int main()
 		cubeShader.setFloat("pointLights[3].quadratic", 0.032f);
 
 		// PROJECTION / VIEW TRANSFORM
-		glm::mat4 projection = glm::perspective(camera.Zoom, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		cubeShader.setMat4("projection", projection);
 		glm::mat4 view = camera.GetViewMatrix();
+		cubeShader.setMat4("view", view);
+
+		// BIND DIFFUSE MAP 
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularMap);
 
 		// MODEL TRANSFORMATION
 		for (int i = 0; i < 10; ++i)

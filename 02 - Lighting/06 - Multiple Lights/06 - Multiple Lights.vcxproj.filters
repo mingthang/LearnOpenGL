@@ -47,5 +47,7 @@
   <ItemGroup>
     <None Include="cubeShader.vs" />
     <None Include="cubeShader.fs" />
+    <None Include="lightCube.vs" />
+    <None Include="lightCube.fs" />
   </ItemGroup>
 </Project>

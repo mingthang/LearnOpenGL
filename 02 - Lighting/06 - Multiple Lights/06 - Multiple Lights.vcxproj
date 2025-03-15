@@ -148,6 +148,8 @@
   <ItemGroup>
     <None Include="cubeShader.fs" />
     <None Include="cubeShader.vs" />
+    <None Include="lightCube.fs" />
+    <None Include="lightCube.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
