@@ -37,6 +37,11 @@ Working through an OpenGL tutorial and conducting some self-research.
 - **Repository**: [https://github.com/g-truc/glm](https://github.com/g-truc/glm)
 - **Description**: OpenGL Mathematics header-only library.
 
+### assimp
+- **Version**: 5.4.3
+- **Repository**: [https://github.com/assimp/assimp](https://github.com/assimp/assimp)
+- **Description**: Open Asset Import Library is a library that loads various 3D file formats into a shared, in-memory format. It supports more than 40 file formats for import and a growing selection of file formats for export.
+
 ### Dear ImGui
 - **Version**: 1.91.8
 - **Repository**: [https://github.com/ocornut/imgui](https://github.com/ocornut/imgui)
