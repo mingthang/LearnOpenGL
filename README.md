@@ -3,17 +3,28 @@
 Working through an OpenGL tutorial and conducting some self-research.
 
 ## Showcase
-<p align="center">
-  <img src="https://github.com/mingthang/LearnOpenGL/blob/master/Resources/Images/PlayStation.gif" width="45%" />
-  <br />
-  <em><a href="https://github.com/mingthang/LearnOpenGL/tree/master/01%20-%20Getting%20Started/04%20-%20Textures">Link</a></em>
-</p>
-
-<p align="center">
-  <img src="https://github.com/mingthang/LearnOpenGL/blob/master/Resources/Images/NoisePlane.gif" width="45%" />
-  <br />
-  <em><a href="https://github.com/mingthang/LearnOpenGL/tree/master/01%20-%20Getting%20Started/07%20-%20Camera">Link</a></em>
-</p>
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="https://github.com/mingthang/LearnOpenGL/blob/master/Resources/Images/PlayStation.gif" width="100%" /><br />
+      <em><a href="https://github.com/mingthang/LearnOpenGL/tree/master/01%20-%20Getting%20Started/04%20-%20Textures">Link</a></em>
+    </td>
+    <td align="center">
+      <img src="https://github.com/mingthang/LearnOpenGL/blob/master/Resources/Images/NoisePlane.gif" width="100%" /><br />
+      <em><a href="https://github.com/mingthang/LearnOpenGL/tree/master/01%20-%20Getting%20Started/07%20-%20Camera">Link</a></em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/mingthang/LearnOpenGL/blob/master/Resources/Images/2DGridTransformation.gif" width="100%" /><br />
+      <em><a href="https://github.com/mingthang/LearnOpenGL/tree/master/01%20-%20Getting%20Started/05%20-%20Transformations">Link</a></em>
+    </td>
+    <td align="center">
+      <img src="https://github.com/mingthang/LearnOpenGL/blob/master/Resources/Images/stenciltest.gif" width="100%" /><br />
+      <em><a href="https://github.com/mingthang/LearnOpenGL/tree/master/04%20-%20Advanced%20OpenGL/02%20-%20Stencil%20Testing">Link</a></em>
+    </td>
+  </tr>
+</table>
 
 ## Third Party Libraries Used
 
