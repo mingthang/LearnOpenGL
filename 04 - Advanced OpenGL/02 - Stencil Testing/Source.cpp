@@ -325,6 +325,7 @@ int main()
         view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
         // 1. Render the magic box model 
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         modelShader.use();
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
@@ -335,6 +336,7 @@ int main()
         modelShader.setMat4("model", model);
         modelShader.setVec3("modelColor", glm::vec3(1.0f, 1.0f, 1.0f));
         magicBox.Draw(modelShader);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         // 2. Create stencil masks for each window (first pass)
         glStencilMask(0xFF);                  // Enable writing to stencil
@@ -348,6 +350,7 @@ int main()
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.0f)); // Position mask for window 1
         //model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.95f, 0.95f, 0.95f));
         planeShader.setMat4("model", model);
         planeShader.setMat4("view", view);
         planeShader.setMat4("projection", projection);
@@ -360,6 +363,7 @@ int main()
 		planeShader.use();
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.8f));
+        model = glm::scale(model, glm::vec3(0.95f, 0.95f, 0.95f));
         planeShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
@@ -371,6 +375,7 @@ int main()
         model = glm::mat4(1.0f);
         model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.0f));
+        model = glm::scale(model, glm::vec3(0.95f, 0.95f, 0.95f));
         planeShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
@@ -382,6 +387,7 @@ int main()
         model = glm::mat4(1.0f);
         model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.8f));
+        model = glm::scale(model, glm::vec3(0.95f, 0.95f, 0.95f));
         planeShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
