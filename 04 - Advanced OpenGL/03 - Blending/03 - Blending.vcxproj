@@ -141,6 +141,14 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="marble.jpg" />
+    <Image Include="metal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="envShader.fs" />
+    <None Include="envShader.vs" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
