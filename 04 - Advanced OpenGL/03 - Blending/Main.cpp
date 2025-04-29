@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Shader.h"
 #include <vector>
+#include <cstddef>
 
 #define NEAR_PLANE 0.1f
 #define FAR_PLANE 100.0f
@@ -35,17 +36,11 @@ bool leftMouseDownLastFrame = false;
 bool isDebugMode = false;
 
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
-void MouseCallback(GLFWwindow* window, double xposIn, double yposIn);
 void processInput(GLFWwindow* window);
-void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
-void ToggleDebugMode();
+void MouseCallback(GLFWwindow* window, double xposIn, double yposIn);
 
 // Prototypes
 unsigned int loadTexture(const char* path);
-void Fire(GLFWwindow* window, glm::mat4 projection, glm::mat4 view);
-glm::vec3 RayCast(GLFWwindow* window, glm::mat4 projection, glm::mat4 view);
-//glm::vec3 GetRayDir(double mouseX, double mouseY, glm::mat4 projection, glm::mat4 view);
-glm::vec3 GetRayDir(GLFWwindow* window, glm::mat4 projection, glm::mat4 view);
 
 // Transformations
 glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH/(float)SCR_HEIGHT, NEAR_PLANE, FAR_PLANE);
@@ -73,7 +68,6 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 	glfwSetCursorPosCallback(window, MouseCallback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetMouseButtonCallback(window, MouseButtonCallback);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD to load OpenGL function pointers" << std::endl;
@@ -82,50 +76,121 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	std::vector<Vertex> cubeVertices[] = {
-		// positions			 // normals			  // uv
-		 {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-		 {{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-		 {{0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}}
-	};
-	float planeVertices[] = {
-		// positions			// normals			// texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
-		 5.0f, -0.5f,  5.0f,	0.0f, 1.0f, 0.0f,	2.0f, 0.0f,
-		-5.0f, -0.5f,  5.0f,	0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
-		-5.0f, -0.5f, -5.0f,	0.0f, 1.0f, 0.0f,	0.0f, 2.0f,
+    float cubeVertices[] = {
+        // positions          // texture Coords
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-		 5.0f, -0.5f,  5.0f,	0.0f, 1.0f, 0.0f,	2.0f, 0.0f,
-		-5.0f, -0.5f, -5.0f, 	0.0f, 1.0f, 0.0f,	0.0f, 2.0f,
-		 5.0f, -0.5f, -5.0f,	0.0f, 1.0f, 0.0f,	2.0f, 2.0f
-	};
-	// Cube VAO
-	unsigned int cubeVAO, cubeVBO;
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &cubeVBO);
-	glBindVertexArray(cubeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glBindVertexArray(0);
-	// Plane VAO
-	unsigned int planeVAO, planeVBO;
-	glGenVertexArrays(1, &planeVAO);
-	glGenBuffers(1, &planeVBO);
-	glBindVertexArray(planeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glBindVertexArray(0);
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    };
+    float planeVertices[] = {
+        // positions          // texture Coords 
+         5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+        -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
+        -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+
+         5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+        -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+         5.0f, -0.5f, -5.0f,  2.0f, 2.0f
+    };
+
+    float transparentVertices[] = {
+        // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
+        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+        0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
+        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+
+        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+        1.0f,  0.5f,  0.0f,  1.0f,  0.0f
+    };
+
+    // cube VAO
+    unsigned int cubeVAO, cubeVBO;
+    glGenVertexArrays(1, &cubeVAO);
+    glGenBuffers(1, &cubeVBO);
+    glBindVertexArray(cubeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    // plane VAO
+    unsigned int planeVAO, planeVBO;
+    glGenVertexArrays(1, &planeVAO);
+    glGenBuffers(1, &planeVBO);
+    glBindVertexArray(planeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    // transparent VAO
+    unsigned int transparentVAO, transparentVBO;
+    glGenVertexArrays(1, &transparentVAO);
+    glGenBuffers(1, &transparentVBO);
+    glBindVertexArray(transparentVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, transparentVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(transparentVertices), transparentVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glBindVertexArray(0);
 
 	// Textures
 	GLuint cubeTexID = loadTexture("./marble.jpg");
 	GLuint planeTexID = loadTexture("./metal.png");
+	GLuint transparentTexID = loadTexture("./grass.png");
+
+    // transparent grass locations
+    std::vector<glm::vec3> grassLocations 
+    {
+        glm::vec3(-1.5f, 0.0f, -0.48f),
+        glm::vec3( 1.5f, 0.0f, 0.51f),
+        glm::vec3( 0.0f, 0.0f, 0.7f),
+        glm::vec3(-0.3f, 0.0f, -2.3f),
+        glm::vec3 (0.5f, 0.0f, -0.6f)
+    };
 
 	// Shaders & Configuration
 	Shader envShader("envShader.vs", "envShader.fs");
@@ -136,7 +201,7 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		glClearColor(0.1, 0.1f, 0.1f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Transformations
@@ -167,15 +232,17 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 
-		// Debug
-		if (isDebugMode) {
-
+		// Render transparent objects (sorted by depth from furthest to nearest)
+		glBindVertexArray(transparentVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, transparentTexID);
+		for (size_t i = 0; i < grassLocations.size(); i++) {
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, grassLocations[i]);
+			envShader.setMat4("model", model);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
-
-		if (leftMouseDown) {
-			std::cout << "PEW" << std::endl;
-			leftMouseDown = false;
-		}
+		glBindVertexArray(0);
 
 		// Process input
 		processInput(window);
@@ -204,9 +271,6 @@ void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(window, true);
 
-	if (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT))
-		ToggleDebugMode();
-
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.ProcessKeyboard(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -219,16 +283,6 @@ void processInput(GLFWwindow* window) {
 
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
-}
-
-void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-	if (button == GLFW_MOUSE_BUTTON_LEFT) {
-		if (action == GLFW_PRESS && !leftMouseDownLastFrame)
-			leftMouseDown = true;
-		else 
-			leftMouseDown = false;
-		leftMouseDownLastFrame = leftMouseDown;
-	}
 }
 
 void MouseCallback(GLFWwindow* window, double xposIn, double yposIn) {
@@ -269,8 +323,10 @@ unsigned int loadTexture(const char* path) {
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); // use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat 
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		
@@ -282,55 +338,4 @@ unsigned int loadTexture(const char* path) {
 	}
 
 	return textureID;
-}
-
-void Fire(GLFWwindow* window) {
-	glm::vec3 HitPoint = RayCast(window, projection, camera.GetViewMatrix());
-}
-
-glm::vec3 RayCast(GLFWwindow* window, glm::mat4 projection, glm::mat4 view) {
-	glm::vec3 rayOrigin = camera.Position;
-	glm::vec3 rayDir = GetRayDir(window, projection, view);
-
-	//glm::vec3 HitPoint = RayTriangl
-	return glm::vec3(0);
-}
-
-glm::vec3 GetRayDir(GLFWwindow* window, glm::mat4 projection, glm::mat4 view) {
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
-
-	float rasterX = (float)width / 2.0f;
-	float rasterY = (float)height / 2.0f;
-
-	// Raster space -> NDC transform
-	float x = (2.0f * rasterX) / (float)width - 1.0f;
-	float y = -((2.0f * rasterY) / (float)height - 1.0f);
-	float z = 1.0f;
-	glm::vec4 rayClip(x, y, -1.0f, 1.0f);
-	glm::vec4 rayEye = glm::inverse(projection) * rayClip;
-	rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0f, 0.0f);
-
-	glm::vec3 rayWorldDir = glm::vec3(glm::inverse(view) * rayEye);
-	rayWorldDir = glm::normalize(rayWorldDir);
-
-	return rayWorldDir;
-}
-
-bool RayPlaneIntersection(const glm::vec3 &rayOrigin, const glm::vec3 &rayDir, const glm::vec3 &planePoint, const glm::vec3 &planeNormal, glm::vec3 &hitPoint) {
-	// P(t) = rayOrigin + t*rayDir
-	// N \cdot (P - P(t)) = 0 <=> N \cdot (P - rayOrigin + t*rayDir) = 0
-	// => t = [N \cdot (P - rayOrigin)] / [N \cdot rayDir]
-
-	float t = 0;
-	float denom = glm::dot(planeNormal, rayDir);
-	if (fabs(denom) < EPSILON)
-		return false;
-
-	t = glm::dot(planeNormal, (planePoint - rayOrigin)) / denom;
-	if (t >= 0.0f) {
-		hitPoint = rayOrigin + t * rayDir;
-		return true;
-	}
-	return false;
 }
